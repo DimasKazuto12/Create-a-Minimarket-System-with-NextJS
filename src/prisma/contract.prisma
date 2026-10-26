@@ -1,0 +1,143 @@
+// use prisma-8
+
+enum Role {
+  @@type("pg/text@1")
+  CUSTOMER
+  CASHIER
+  INVENTORY_ADMIN
+  SUPER_ADMIN
+}
+
+enum OrderChannel {
+  @@type("pg/text@1")
+  POS
+  ONLINE
+}
+
+enum OrderStatus {
+  @@type("pg/text@1")
+  PENDING
+  PAID
+  PREPARING
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  @@type("pg/text@1")
+  CASH
+  QRIS
+  TRANSFER
+}
+
+enum StockMovementType {
+  @@type("pg/text@1")
+  IN
+  OUT
+  SALE
+  ADJUSTMENT
+}
+
+model User {
+  id           Uuid     @id @onCreate(uuid())
+  name         String
+  email        String   @unique
+  phone        String?
+  passwordHash String
+  role         Role     @default(CUSTOMER)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  attendances    Attendance[]
+  customerOrders Order[]         @relation("CustomerOrders")
+  cashierOrders  Order[]         @relation("CashierOrders")
+  stockMovements StockMovement[]
+
+  @@map("users")
+}
+
+model Category {
+  id       Uuid      @id @onCreate(uuid())
+  name     String    @unique
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id         Uuid      @id @onCreate(uuid())
+  barcode    String    @unique
+  name       String
+  price      Int
+  stock      Int       @default(0)
+  minStock   Int       @default(5)
+  imageUrl   String?
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  categoryId Uuid?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  orderItems     OrderItem[]
+  stockMovements StockMovement[]
+
+  @@map("products")
+}
+
+model Order {
+  id            Uuid           @id @onCreate(uuid())
+  code          String         @unique
+  channel       OrderChannel
+  status        OrderStatus    @default(PENDING)
+  paymentMethod PaymentMethod?
+  total         Int
+  createdAt     DateTime       @default(now())
+
+  customerId Uuid?
+  customer   User?  @relation("CustomerOrders", fields: [customerId], references: [id])
+  cashierId  Uuid?
+  cashier    User?  @relation("CashierOrders", fields: [cashierId], references: [id])
+
+  items OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        Uuid    @id @onCreate(uuid())
+  orderId   Uuid
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId Uuid
+  product   Product @relation(fields: [productId], references: [id])
+  qty       Int
+  unitPrice Int
+  subtotal  Int
+
+  @@map("order_items")
+}
+
+model StockMovement {
+  id        Uuid              @id @onCreate(uuid())
+  productId Uuid
+  product   Product           @relation(fields: [productId], references: [id])
+  type      StockMovementType
+  qty       Int
+  note      String?
+  createdAt DateTime          @default(now())
+  userId    Uuid?
+  user      User?             @relation(fields: [userId], references: [id])
+
+  @@map("stock_movements")
+}
+
+model Attendance {
+  id       Uuid      @id @onCreate(uuid())
+  userId   Uuid
+  user     User      @relation(fields: [userId], references: [id])
+  day      String    // "2026-10-25" (tanggal WIB), 1 absen per orang per hari
+  clockIn  DateTime  @default(now())
+  clockOut DateTime?
+
+  @@unique([userId, day])
+  @@map("attendances")
+}

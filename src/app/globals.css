@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --background: #fafaf9;
+  --foreground: #1c1917;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
