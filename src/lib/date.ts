@@ -1,4 +1,5 @@
 import "temporal-polyfill/full/global";
+import "temporal-polyfill/types/global";
 
 const WIB_MS = 7 * 60 * 60 * 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;

@@ -1,6 +1,7 @@
 "use server";
 
 import "temporal-polyfill/full/global";
+import "temporal-polyfill/types/global";
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
 import { requireRole } from "@/lib/auth";

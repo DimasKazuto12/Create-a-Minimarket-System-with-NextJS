@@ -2,7 +2,6 @@ import Link from "next/link";
 import { db } from "@/prisma/db";
 import { requireRole } from "@/lib/auth";
 import { io } from "next/cache";
-import { ROLE_LABEL } from "@/lib/rbac";
 import { todayWIB } from "@/lib/date";
 import { formatDay } from "@/lib/format";
 import { PageHeader } from "@/components/ui/PageHeader";

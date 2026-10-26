@@ -2,13 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { changeRoleAction } from "@/actions/employee.actions";
+import { ROLE_LABEL } from "@/lib/rbac";
 
-const OPTIONS = [
-  ["CUSTOMER", "Pelanggan"],
-  ["CASHIER", "Kasir"],
-  ["INVENTORY_ADMIN", "Admin Barang"],
-  ["SUPER_ADMIN", "Admin Utama"],
-] as const;
+const OPTIONS = Object.entries(ROLE_LABEL);
 
 type Props = { userId: string; role: string; disabled?: boolean };
 
