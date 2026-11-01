@@ -24,6 +24,10 @@
       "model": "Product",
       "namespace": "public"
     },
+    "reviews": {
+      "model": "Review",
+      "namespace": "public"
+    },
     "stock_movements": {
       "model": "StockMovement",
       "namespace": "public"
@@ -559,6 +563,13 @@
                   "kind": "scalar"
                 }
               },
+              "description": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -641,6 +652,21 @@
                   "namespace": "public"
                 }
               },
+              "reviews": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "productId"
+                  ]
+                },
+                "to": {
+                  "model": "Review",
+                  "namespace": "public"
+                }
+              },
               "stockMovements": {
                 "cardinality": "1:N",
                 "on": {
@@ -668,6 +694,9 @@
                 "createdAt": {
                   "column": "createdAt"
                 },
+                "description": {
+                  "column": "description"
+                },
                 "id": {
                   "column": "id"
                 },
@@ -692,6 +721,110 @@
               },
               "namespaceId": "public",
               "table": "products"
+            }
+          },
+          "Review": {
+            "fields": {
+              "comment": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "productId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "rating": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "product": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "productId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Product",
+                  "namespace": "public"
+                }
+              },
+              "user": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "comment": {
+                  "column": "comment"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "productId": {
+                  "column": "productId"
+                },
+                "rating": {
+                  "column": "rating"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "reviews"
             }
           },
           "StockMovement": {
@@ -922,6 +1055,21 @@
                 },
                 "to": {
                   "model": "Order",
+                  "namespace": "public"
+                }
+              },
+              "reviews": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "userId"
+                  ]
+                },
+                "to": {
+                  "model": "Review",
                   "namespace": "public"
                 }
               },
@@ -1367,6 +1515,11 @@
                   },
                   "nullable": false
                 },
+                "description": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "id": {
                   "codecId": "pg/uuid@1",
                   "dataType": "pg/uuid",
@@ -1455,6 +1608,115 @@
                 {
                   "columns": [
                     "barcode"
+                  ]
+                }
+              ]
+            },
+            "reviews": {
+              "columns": {
+                "comment": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "dataType": "pg/timestamptz",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/uuid@1",
+                  "dataType": "pg/uuid",
+                  "nullable": false
+                },
+                "productId": {
+                  "codecId": "pg/uuid@1",
+                  "dataType": "pg/uuid",
+                  "nullable": false
+                },
+                "rating": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "userId": {
+                  "codecId": "pg/uuid@1",
+                  "dataType": "pg/uuid",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "reviews_productId_idx_5858600a"
+                  },
+                  "source": {
+                    "columns": [
+                      "productId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "reviews"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "products"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "reviews_userId_idx_a489d58a"
+                  },
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "reviews"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "users"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "productId"
+                  ],
+                  "name": "reviews_productId_idx_5858600a",
+                  "prefix": "reviews_productId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "reviews_userId_idx_a489d58a",
+                  "prefix": "reviews_userId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "productId",
+                    "userId"
                   ]
                 }
               ]
@@ -1714,10 +1976,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "7cf26639d733103865f807410b30f97936270d2170ac59e0d2a7a9592c7b4b2f"
+    "storageHash": "9a6b1960a8214f7717ea0f0a9e37e5695a96468403bb903a15cc6b57f31a56e0"
   },
   "execution": {
-    "executionHash": "e03c479931bdb85b1fd2e91f068503705ce910ca28e37ce4a155c8fa3c6b517f",
+    "executionHash": "4c5f24499d8e870609cb1a742f7ec9c0bc118fe201576bb8eaf85b053b5f21d5",
     "mutations": {
       "defaults": [
         {
@@ -1771,6 +2033,17 @@
           },
           "ref": {
             "entry": "products",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "reviews",
             "field": "id",
             "namespace": "public"
           }

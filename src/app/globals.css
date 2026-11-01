@@ -1,15 +1,55 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+}
+
+@theme {
+  /* Hijau segar menggantikan emerald bawaan, jadi seluruh app ikut berubah */
+  --color-emerald-50: #effaf3;
+  --color-emerald-100: #d6f2e0;
+  --color-emerald-200: #aee5c3;
+  --color-emerald-300: #7cd29d;
+  --color-emerald-400: #45b878;
+  --color-emerald-500: #1f9d5c;
+  --color-emerald-600: #158049;
+  --color-emerald-700: #12663c;
+  --color-emerald-800: #0f5132;
+  --color-emerald-900: #0c4129;
+  --color-emerald-950: #06271a;
+
+  /* Aksen & latar */
+  --color-accent: #f2683c;
+  --color-accent-soft: #ffe8de;
+  --color-cream: #faf7f1;
+
+  --animate-pop: pop 150ms ease-out;
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: translateY(-4px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }
 
 :root {
-  --background: #fafaf9;
+  --background: #faf7f1;
   --foreground: #1c1917;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

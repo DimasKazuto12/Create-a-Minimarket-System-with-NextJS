@@ -10,15 +10,13 @@ export const ROLE_LABEL: Record<Role, string> = {
 };
 
 export const HOME_BY_ROLE: Record<Role, string> = {
-  CUSTOMER: "/shop",
+  CUSTOMER: "/",
   CASHIER: "/cashier",
   INVENTORY_ADMIN: "/inventory",
   SUPER_ADMIN: "/dashboard",
 };
 
 export const ROUTE_RULES: { prefix: string; roles: Role[] }[] = [
-  { prefix: "/shop", roles: ["CUSTOMER"] },
-  { prefix: "/cart", roles: ["CUSTOMER"] },
   { prefix: "/orders", roles: ["CUSTOMER"] },
   { prefix: "/dashboard", roles: ["SUPER_ADMIN"] },
   { prefix: "/cashier", roles: ["CASHIER", "SUPER_ADMIN"] },
@@ -38,3 +36,10 @@ export const STAFF_NAV: { href: string; label: string; icon: StaffIcon; roles: R
   { href: "/attendance", label: "Absensi", icon: "clock", roles: STAFF_ROLES },
   { href: "/employees", label: "Karyawan", icon: "users", roles: ["SUPER_ADMIN"] },
 ];
+
+export const ROLE_HINT: Record<Role, string> = {
+  CUSTOMER: "Hanya belanja online",
+  CASHIER: "Kasir dan pesanan online",
+  INVENTORY_ADMIN: "Kelola stok barang",
+  SUPER_ADMIN: "Akses penuh",
+};

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import LoginForm from "./LoginForm";
+import LoginForm from "@/components/auth/LoginForm";
 
 export const metadata = { title: "Masuk — Toko Kita" };
 

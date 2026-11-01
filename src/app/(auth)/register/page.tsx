@@ -1,5 +1,5 @@
 import Link from "next/link";
-import RegisterForm from "./RegisterForm";
+import RegisterForm from "@/components/auth/RegisterForm";
 
 export const metadata = { title: "Daftar — Toko Kita" };
 

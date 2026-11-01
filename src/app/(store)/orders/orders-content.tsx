@@ -4,10 +4,8 @@ import { requireRole } from "@/lib/auth";
 import { formatDateTime, rupiah } from "@/lib/format";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { connection } from "next/server";
 
-export async function OrdersContent() {
-  await connection();
+export async function OrdersList() {
   const session = await requireRole("CUSTOMER");
 
   const orders = await db.orm.public.Order
@@ -57,7 +55,7 @@ export async function OrdersContent() {
         {orders.length === 0 && (
           <div className="rounded-3xl border border-dashed border-stone-300 p-12 text-center">
             <p className="text-stone-500">Kamu belum punya pesanan.</p>
-            <Link href="/shop" className="mt-4 inline-block rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white">
+            <Link href="/products" className="mt-4 inline-block rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white">
               Belanja sekarang
             </Link>
           </div>

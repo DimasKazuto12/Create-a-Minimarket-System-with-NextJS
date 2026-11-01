@@ -7,18 +7,22 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import { checkoutOnlineAction } from "@/actions/order.actions";
 import { useCart } from "@/components/customer/CartProvider";
 import { rupiah } from "@/lib/format";
+import { useAuth } from "@/components/store/AuthModal";
 
 export function CartView() {
   const { lines, total, ready, setQty, remove, clear } = useCart();
   const router = useRouter();
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
+  const { user, openLogin } = useAuth();
 
   function checkout() {
     setError("");
+    if (!user) return openLogin("Masuk untuk mengirim pesananmu. Isi keranjang tetap aman.", "/cart");
+  if (user.role !== "CUSTOMER") return setError("Akun staf tidak bisa memesan online. Gunakan menu Kasir.");
     start(async () => {
       const res = await checkoutOnlineAction(lines.map((l) => ({ productId: l.productId, qty: l.qty })));
-      if ("error" in res) return setError(res.error ?? '');
+      if ("error" in res) return setError(res.error ?? "");
       clear();
       router.push("/orders");
     });
@@ -83,7 +87,7 @@ export function CartView() {
           disabled={pending}
           className="mt-5 w-full rounded-xl bg-emerald-400 py-3 font-semibold text-emerald-950 hover:bg-emerald-300 disabled:opacity-60"
         >
-          {pending ? "Mengirim…" : "Kirim pesanan"}
+          {pending ? "Mengirim…" : user ? "Kirim pesanan" : "Masuk & kirim pesanan"}
         </button>
       </aside>
     </div>

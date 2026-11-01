@@ -8,6 +8,11 @@ import { db } from "@/prisma/db";
 import { encrypt, SESSION_COOKIE, type Role } from "@/lib/session";
 import { HOME_BY_ROLE } from "@/lib/rbac";
 
+function destination(role: Role, next: FormDataEntryValue | null) {
+  const safe = typeof next === "string" && next.startsWith("/") && !next.startsWith("//") ? next : null;
+  return role === "CUSTOMER" && safe ? safe : HOME_BY_ROLE[role];
+}
+
 const registerSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter"),
   email: z.string().email("Email tidak valid"),
@@ -56,7 +61,7 @@ export async function registerAction(_: FormState, formData: FormData): Promise<
   });
 
   await startSession(user);
-  redirect(HOME_BY_ROLE.CUSTOMER);
+  redirect(destination("CUSTOMER", formData.get("next")));
 }
 
 export async function loginAction(_: FormState, formData: FormData): Promise<FormState> {
@@ -70,10 +75,10 @@ export async function loginAction(_: FormState, formData: FormData): Promise<For
   if (!user || !ok) return { error: "Email atau password salah", values };
 
   await startSession(user);
-  redirect(HOME_BY_ROLE[user.role]);
+  redirect(destination(user.role, formData.get("next")));
 }
 
 export async function logoutAction() {
   (await cookies()).delete(SESSION_COOKIE);
-  redirect("/login");
+  redirect("/");
 }

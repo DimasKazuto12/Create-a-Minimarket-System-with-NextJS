@@ -21,6 +21,7 @@ export async function InventoryContent({ searchParams }: Props) {
   await requireRole("INVENTORY_ADMIN", "SUPER_ADMIN");
   const { q } = await searchParams;
   const term = (q ?? "").trim().toLowerCase();
+  const categories = await db.orm.public.Category.orderBy((c) => c.name.asc()).all()
 
   const all = await db.orm.public.Product
     .where({ isActive: true })
@@ -60,7 +61,7 @@ export async function InventoryContent({ searchParams }: Props) {
 
       <div className="mb-6 rounded-3xl border border-stone-200 bg-white p-5">
         <h2 className="mb-4 font-semibold text-stone-900">Tambah barang baru</h2>
-        <AddProductForm />
+        <AddProductForm categories={categories.map((c) => ({ id: c.id, name: c.name }))} />
       </div>
 
       <form action="/inventory" className="mb-4">

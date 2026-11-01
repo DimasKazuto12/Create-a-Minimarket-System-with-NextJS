@@ -5,10 +5,6 @@ import { HOME_BY_ROLE, ROUTE_RULES } from "@/lib/rbac";
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const session = await decrypt(req.cookies.get(SESSION_COOKIE)?.value);
-  if (pathname === "/") {
-    const to = session ? HOME_BY_ROLE[session.role] : "/login";
-    return NextResponse.redirect(new URL(to, req.url));
-  }
 
   const rule = ROUTE_RULES.find((r) => pathname.startsWith(r.prefix));
 

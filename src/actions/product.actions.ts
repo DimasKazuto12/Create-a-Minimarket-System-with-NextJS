@@ -11,6 +11,7 @@ const productSchema = z.object({
   price: z.coerce.number().int().min(1, "Harga harus lebih dari 0"),
   stock: z.coerce.number().int().min(0).default(0),
   minStock: z.coerce.number().int().min(0).default(5),
+  description: z.string().trim().max(1000, "Deskripsi maksimal 1000 karakter").optional(),
 });
 
 export async function createProductAction(formData: FormData) {
@@ -21,9 +22,27 @@ export async function createProductAction(formData: FormData) {
   const exists = await db.orm.public.Product.first({ barcode: parsed.data.barcode });
   if (exists) return { error: "Barcode sudah dipakai barang lain" };
 
-  const { stock, ...data } = parsed.data;
+  // Kategori: pilih yang ada, atau buat baru
+  const choice = String(formData.get("categoryId") ?? "");
+  const newName = String(formData.get("newCategory") ?? "").trim();
+  let categoryId: string | null = null;
+
+  if (choice === "__new__") {
+    if (newName.length < 2) return { error: "Nama kategori baru minimal 2 karakter" };
+    const found = await db.orm.public.Category.first({ name: newName });
+    categoryId = found ? found.id : (await db.orm.public.Category.create({ name: newName })).id;
+  } else if (choice) {
+    categoryId = choice;
+  }
+
+  const { stock, description, ...data } = parsed.data;
   await db.transaction(async (tx) => {
-    const p = await tx.orm.public.Product.create({ ...data, stock });
+    const p = await tx.orm.public.Product.create({
+      ...data,
+      description: description || null,
+      categoryId,
+      stock,
+    });
     if (stock > 0) {
       await tx.orm.public.StockMovement.create({
         productId: p.id,
@@ -36,6 +55,7 @@ export async function createProductAction(formData: FormData) {
   });
 
   revalidatePath("/inventory");
+  revalidatePath("/products");
   return { ok: true };
 }
 

@@ -2,9 +2,15 @@
 
 import { useState, useTransition } from "react";
 import { changeRoleAction } from "@/actions/employee.actions";
-import { ROLE_LABEL } from "@/lib/rbac";
+import { Select, type SelectOption } from "@/components/ui/Select";
+import { ROLE_HINT, ROLE_LABEL } from "@/lib/rbac";
+import type { Role } from "@/lib/session";
 
-const OPTIONS = Object.entries(ROLE_LABEL);
+const OPTIONS: SelectOption[] = (Object.keys(ROLE_LABEL) as Role[]).map((r) => ({
+  value: r,
+  label: ROLE_LABEL[r],
+  hint: ROLE_HINT[r],
+}));
 
 type Props = { userId: string; role: string; disabled?: boolean };
 
@@ -28,19 +34,15 @@ export function RoleSelect({ userId, role, disabled }: Props) {
   }
 
   return (
-    <div>
-      <select
+    <div className="w-48">
+      <Select
+        size="sm"
         value={value}
+        onChange={onChange}
+        options={OPTIONS}
         disabled={disabled || pending}
-        onChange={(e) => onChange(e.target.value)}
-        className="rounded-lg border border-stone-200 bg-white px-3 py-1.5 text-sm outline-none focus:border-emerald-500 disabled:opacity-50"
-      >
-        {OPTIONS.map(([v, label]) => (
-          <option key={v} value={v}>
-            {label}
-          </option>
-        ))}
-      </select>
+        aria-label="Ubah role"
+      />
       {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
     </div>
   );
